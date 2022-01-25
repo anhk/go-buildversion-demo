@@ -1,1 +1,0 @@
-# go-buildversion-demo
