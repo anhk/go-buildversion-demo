@@ -1,22 +1,26 @@
 export GOPROXY=https://goproxy.cn,direct
 export GO111MODULE=on
 
-OBJ = main
+OBJ = buildversion-demo
 
-MajorVersion=V1.0
-BuildVersion=${MajorVersion}.$(shell date +%Y%m%d%H%M%S)
+VERSION ?= v0.0.1-test
+GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+GO_VERSION=$(shell go version  | awk '{print $$3}')
+BUILD_TIME=$(shell date +%FT%T%z)
+OS_ARCH=$(shell go version  | awk '{print $$4}')
+GIT_COMMIT=$(shell git rev-parse --short HEAD)
+
+LDFLAGS=-ldflags "-X coding.jd.com/anhk/go-buildversion-demo/pkg/version.Version=${VERSION} \
+ -X coding.jd.com/anhk/go-buildversion-demo/pkg/version.GoVersion=${GO_VERSION} \
+ -X coding.jd.com/anhk/go-buildversion-demo/pkg/version.BuildTime=${BUILD_TIME} \
+ -X coding.jd.com/anhk/go-buildversion-demo/pkg/version.GitBranch=${GIT_BRANCH} \
+ -X coding.jd.com/anhk/go-buildversion-demo/pkg/version.GitCommit=${GIT_COMMIT} "
 
 default: $(OBJ)
 
 $(OBJ):
-	go build -gcflags "-N -l" -ldflags="-X main.BuildVersion=${BuildVersion}" -o $@ .
+	go build -gcflags "-N -l"  ${LDFLAGS} -o $@ .
 
 clean:
 	rm -fr $(OBJ)
 
--include .deps
-
-dep:
-	echo -n "$(OBJ):" > .deps
-	find . -name '*.go' | awk '{print $$0 " \\"}' >> .deps
-	echo "" >> .deps

@@ -1,11 +1,7 @@
 package main
 
-import (
-	"fmt"
-)
-
-var BuildVersion = "development"
+import "coding.jd.com/anhk/go-buildversion-demo/pkg/version"
 
 func main() {
-	fmt.Println("Version:", BuildVersion)
+	version.ShowVersion()
 }
